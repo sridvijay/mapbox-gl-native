@@ -167,7 +167,7 @@ void Painter::renderSymbol(PaintParameters& parameters,
             renderSDF(bucket,
                       tile,
                       1.0f,
-                      {{ float(activeSpriteAtlas->getWidth()) / 4.0f, float(activeSpriteAtlas->getHeight()) / 4.0f }},
+                      {{ float(activeSpriteAtlas->getSize().width) / 4.0f, float(activeSpriteAtlas->getSize().width) / 4.0f }},
                       parameters.shaders.symbolIconSDF,
                       &SymbolBucket::drawIcons,
                       layout.iconRotationAlignment,
@@ -205,7 +205,7 @@ void Painter::renderSymbol(PaintParameters& parameters,
             context.program = iconShader.getID();
             iconShader.u_matrix = vtxMatrix;
             iconShader.u_extrude_scale = extrudeScale;
-            iconShader.u_texsize = {{ float(activeSpriteAtlas->getWidth()) / 4.0f, float(activeSpriteAtlas->getHeight()) / 4.0f }};
+            iconShader.u_texsize = {{ float(activeSpriteAtlas->getSize().width) / 4.0f, float(activeSpriteAtlas->getSize().width) / 4.0f }};
             iconShader.u_rotate_with_map = alignedWithMap;
             iconShader.u_texture = 0;
 
