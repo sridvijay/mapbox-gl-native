@@ -161,10 +161,35 @@ std::unique_ptr<AnnotationTileData> AnnotationManager::getTileData(const Canonic
 
     LatLngBounds tileBounds(tileID);
 
-    symbolTree.query(boost::geometry::index::intersects(tileBounds),
+    // Extend the tile bounds to its neighbor tiles to account for annotation
+    // symbols trespassing tile edges.
+    static const double bufferRatio = 8;
+    Point<double> padding {
+        std::abs(tileBounds.south() + tileBounds.north()) / bufferRatio,
+        std::abs(tileBounds.west() + tileBounds.east()) / bufferRatio
+    };
+    tileBounds.extend(LatLng { tileBounds.north() + padding.y, tileBounds.west() - padding.x });
+    tileBounds.extend(LatLng { tileBounds.south() - padding.y, tileBounds.east() + padding.x });
+
+    auto querySymbols = [&](const auto& predicates, const UnwrappedTileID& unwrappedID) {
+        symbolTree.query(predicates,
         boost::make_function_output_iterator([&](const auto& val){
-            val->updateLayer(tileID, pointLayer);
+            val->updateLayer(unwrappedID, pointLayer);
         }));
+    };
+
+    querySymbols(bgi::intersects(tileBounds), UnwrappedTileID { 0, tileID });
+
+    // Account for bgi::intersects being restricted to -180..+180.
+    if (tileID.x == 0) {
+        UnwrappedTileID unwrappedID { tileID.z, 1 << tileID.z, tileID.y };
+        auto wrapped = LatLngBounds::hull(tileBounds.southwest().wrapped(), { tileBounds.north(), 180 });
+        querySymbols(bgi::intersects(wrapped), unwrappedID);
+    } else if (tileID.x == (1u << tileID.z) - 1) {
+        UnwrappedTileID unwrappedID { tileID.z, -1, tileID.y };
+        auto wrapped = LatLngBounds::hull({ tileBounds.south(), -180 }, tileBounds.northeast().wrapped());
+        querySymbols(bgi::intersects(wrapped), unwrappedID);
+    }
 
     for (const auto& shape : shapeAnnotations) {
         shape.second->updateTileData(tileID, *tileData);

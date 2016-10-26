@@ -50,8 +50,33 @@ TEST(Annotations, SymbolAnnotation) {
     auto features = test.map.queryPointAnnotations(screenBox);
     EXPECT_EQ(features.size(), 1u);
 
-    test.map.setZoom(test.map.getMaxZoom());
+    for (uint8_t zoom = test.map.getMinZoom(); zoom <= test.map.getMaxZoom(); ++zoom) {
+        test.map.setZoom(zoom);
+        test.checkRendering("point_annotation");
+    }
+
+    features = test.map.queryPointAnnotations(screenBox);
+    EXPECT_EQ(features.size(), 1u);
+}
+
+TEST(Annotations, SymbolAnnotationDateline) {
+    AnnotationTest test;
+
+    test.map.setStyleJSON(util::read_file("test/fixtures/api/empty.json"));
+    test.map.addAnnotationIcon("default_marker", namedMarker("default_marker.png"));
+    test.map.addAnnotation(SymbolAnnotation { Point<double>(180, 0), "default_marker" });
+    test.map.setLatLng({ 0, 180 });
     test.checkRendering("point_annotation");
+
+    auto size = test.view.getSize();
+    auto screenBox = ScreenBox { {}, { double(size[0]), double(size[1]) } };
+    auto features = test.map.queryPointAnnotations(screenBox);
+    EXPECT_EQ(features.size(), 1u);
+
+    for (uint8_t zoom = test.map.getMinZoom(); zoom <= test.map.getMaxZoom(); ++zoom) {
+        test.map.setZoom(zoom);
+        test.checkRendering("point_annotation");
+    }
 
     features = test.map.queryPointAnnotations(screenBox);
     EXPECT_EQ(features.size(), 1u);
