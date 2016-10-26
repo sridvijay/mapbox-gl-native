@@ -121,22 +121,19 @@ void Painter::renderSymbol(PaintParameters& parameters,
 
     context.depthMask = false;
 
-    // TODO remove the `true ||` when #1673 is implemented
-    const bool drawAcrossEdges = (frame.mapMode == MapMode::Continuous) && (true || !(layout.textAllowOverlap || layout.iconAllowOverlap ||
-          layout.textIgnorePlacement || layout.iconIgnorePlacement));
-
     // Disable the stencil test so that labels aren't clipped to tile boundaries.
     //
     // Layers with features that may be drawn overlapping aren't clipped. These
     // layers are sorted in the y direction, and to draw the correct ordering near
     // tile edges the icons are included in both tiles and clipped when drawing.
-    if (drawAcrossEdges) {
-        context.stencilTest = false;
-    } else {
+    if (bucket.needsClipping()) {
         context.stencilOp = { gl::StencilTestOperation::Keep, gl::StencilTestOperation::Keep,
                               gl::StencilTestOperation::Replace };
         context.stencilTest = true;
+    } else {
+        context.stencilTest = false;
     }
+
 
     setDepthSublayer(0);
 

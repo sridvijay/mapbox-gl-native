@@ -2,7 +2,6 @@
 
 #include <mbgl/renderer/bucket.hpp>
 #include <mbgl/renderer/element_group.hpp>
-#include <mbgl/map/mode.hpp>
 #include <mbgl/gl/vertex_buffer.hpp>
 #include <mbgl/gl/index_buffer.hpp>
 #include <mbgl/shader/symbol_vertex.hpp>
@@ -21,8 +20,7 @@ class CollisionBoxShader;
 
 class SymbolBucket : public Bucket {
 public:
-    SymbolBucket(const MapMode,
-                 style::SymbolLayoutProperties,
+    SymbolBucket(style::SymbolLayoutProperties,
                  bool sdfIcons,
                  bool iconsNeedLinear);
 
@@ -39,7 +37,6 @@ public:
     void drawIcons(SymbolIconShader&, gl::Context&, PaintMode);
     void drawCollisionBoxes(CollisionBoxShader&, gl::Context&);
 
-    const MapMode mode;
     const style::SymbolLayoutProperties layout;
     const bool sdfIcons;
     const bool iconsNeedLinear;

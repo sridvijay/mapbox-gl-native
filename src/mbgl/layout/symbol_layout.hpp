@@ -1,6 +1,5 @@
 #pragma once
 
-#include <mbgl/map/mode.hpp>
 #include <mbgl/style/layers/symbol_layer_properties.hpp>
 #include <mbgl/layout/symbol_feature.hpp>
 #include <mbgl/layout/symbol_instance.hpp>
@@ -30,7 +29,6 @@ public:
                  std::string sourceLayerName_,
                  uint32_t overscaling,
                  float zoom,
-                 const MapMode,
                  const GeometryTileLayer&,
                  const style::Filter&,
                  style::SymbolLayoutProperties,
@@ -76,7 +74,6 @@ private:
 
     const float overscaling;
     const float zoom;
-    const MapMode mode;
     const style::SymbolLayoutProperties layout;
     const float textMaxSize;
 

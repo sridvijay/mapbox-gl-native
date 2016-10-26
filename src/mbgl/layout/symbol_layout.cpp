@@ -19,6 +19,7 @@
 #include <mbgl/math/minmax.hpp>
 #include <mbgl/platform/platform.hpp>
 #include <mbgl/platform/log.hpp>
+#include <mbgl/annotation/annotation_manager.hpp>
 
 namespace mbgl {
 
@@ -28,7 +29,6 @@ SymbolLayout::SymbolLayout(std::string bucketName_,
                            std::string sourceLayerName_,
                            uint32_t overscaling_,
                            float zoom_,
-                           const MapMode mode_,
                            const GeometryTileLayer& layer,
                            const style::Filter& filter,
                            style::SymbolLayoutProperties layout_,
@@ -38,7 +38,6 @@ SymbolLayout::SymbolLayout(std::string bucketName_,
       sourceLayerName(std::move(sourceLayerName_)),
       overscaling(overscaling_),
       zoom(zoom_),
-      mode(mode_),
       layout(std::move(layout_)),
       textMaxSize(textMaxSize_),
       spriteAtlas(spriteAtlas_),
@@ -298,8 +297,7 @@ void SymbolLayout::addFeature(const GeometryCollection &lines,
             // be drawn across tile boundaries. Instead they need to be included in
             // the buffers for both tiles and clipped to tile boundaries at draw time.
             //
-            // TODO remove the `&& false` when is #1673 implemented
-            const bool addToBuffers = (mode == MapMode::Still) || inside || (mayOverlap && false);
+            const bool addToBuffers = inside || mayOverlap;
 
             symbolInstances.emplace_back(anchor, line, shapedText, shapedIcon, layout, addToBuffers, symbolInstances.size(),
                     textBoxScale, textPadding, textPlacement,
@@ -325,7 +323,7 @@ bool SymbolLayout::anchorIsTooClose(const std::u32string &text, const float repe
 }
 
 std::unique_ptr<SymbolBucket> SymbolLayout::place(CollisionTile& collisionTile) {
-    auto bucket = std::make_unique<SymbolBucket>(mode, layout, sdfIcons, iconsNeedLinear);
+    auto bucket = std::make_unique<SymbolBucket>(layout, sdfIcons, iconsNeedLinear);
 
     // Calculate which labels can be shown and when they can be shown and
     // create the bufers used for rendering.

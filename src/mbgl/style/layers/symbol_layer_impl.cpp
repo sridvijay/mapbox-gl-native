@@ -68,7 +68,6 @@ std::unique_ptr<SymbolLayout> SymbolLayer::Impl::createLayout(BucketParameters& 
                                           parameters.layer.getName(),
                                           parameters.tileID.overscaleFactor(),
                                           parameters.tileID.overscaledZ,
-                                          parameters.mode,
                                           parameters.layer,
                                           filter,
                                           layoutProperties,

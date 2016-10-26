@@ -10,12 +10,10 @@ namespace mbgl {
 
 using namespace style;
 
-SymbolBucket::SymbolBucket(const MapMode mode_,
-                           style::SymbolLayoutProperties layout_,
+SymbolBucket::SymbolBucket(style::SymbolLayoutProperties layout_,
                            bool sdfIcons_,
                            bool iconsNeedLinear_)
-    : mode(mode_),
-      layout(std::move(layout_)),
+    : layout(std::move(layout_)),
       sdfIcons(sdfIcons_),
       iconsNeedLinear(iconsNeedLinear_) {
 }
@@ -63,7 +61,7 @@ bool SymbolBucket::hasCollisionBoxData() const {
 }
 
 bool SymbolBucket::needsClipping() const {
-    return mode == MapMode::Still;
+    return layout.symbolAvoidEdges || layout.iconAllowOverlap || layout.iconIgnorePlacement || layout.textAllowOverlap || layout.textIgnorePlacement;
 }
 
 void SymbolBucket::drawGlyphs(SymbolSDFShader& shader,
