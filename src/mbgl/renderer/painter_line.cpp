@@ -90,7 +90,8 @@ void Painter::renderLine(PaintParameters& parameters,
         linesdfShader.u_tex_y_a = posA.y;
         linesdfShader.u_patternscale_b = {{ scaleXB, scaleYB }};
         linesdfShader.u_tex_y_b = posB.y;
-        linesdfShader.u_sdfgamma = lineAtlas->width / (std::min(widthA, widthB) * 256.0 * frame.pixelRatio) / 2;
+        linesdfShader.u_sdfgamma =
+            lineAtlas->getSize().width / (std::min(widthA, widthB) * 256.0 * frame.pixelRatio) / 2;
         linesdfShader.u_mix = properties.lineDasharray.value.t;
         linesdfShader.u_extra = extra;
         linesdfShader.u_offset = -properties.lineOffset;
