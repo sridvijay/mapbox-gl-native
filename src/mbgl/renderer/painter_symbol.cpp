@@ -231,23 +231,13 @@ void Painter::renderSymbol(PaintParameters& parameters,
 
         glyphAtlas->bind(context, 0);
 
-        renderSDF(bucket,
-                  tile,
-                  24.0f,
-                  {{ float(glyphAtlas->width) / 4, float(glyphAtlas->height) / 4 }},
-                  parameters.shaders.symbolGlyph,
-                  &SymbolBucket::drawGlyphs,
-                  layout.textRotationAlignment,
-                  layout.textPitchAlignment,
-                  layout.textSize,
-                  paint.textOpacity,
-                  paint.textColor,
-                  paint.textHaloColor,
-                  paint.textHaloWidth,
-                  paint.textHaloBlur,
-                  paint.textTranslate,
-                  paint.textTranslateAnchor,
-                  layer.impl->textSize);
+        renderSDF(
+            bucket, tile, 24.0f,
+            {{ float(glyphAtlas->getSize().width) / 4, float(glyphAtlas->getSize().height) / 4 }},
+            parameters.shaders.symbolGlyph, &SymbolBucket::drawGlyphs, layout.textRotationAlignment,
+            layout.textPitchAlignment, layout.textSize, paint.textOpacity, paint.textColor,
+            paint.textHaloColor, paint.textHaloWidth, paint.textHaloBlur, paint.textTranslate,
+            paint.textTranslateAnchor, layer.impl->textSize);
     }
 
     if (bucket.hasCollisionBoxData()) {
