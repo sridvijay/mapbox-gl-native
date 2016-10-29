@@ -8,6 +8,7 @@
 #include <mbgl/sprite/sprite_atlas.hpp>
 #include <mbgl/shader/shaders.hpp>
 #include <mbgl/util/math.hpp>
+#include <mbgl/tile/tile.hpp>
 
 #include <cmath>
 
@@ -256,8 +257,7 @@ void Painter::renderSymbol(PaintParameters& parameters,
         auto& collisionBoxShader = shaders->collisionBox;
         context.program = collisionBoxShader.getID();
         collisionBoxShader.u_matrix = tile.matrix;
-        // TODO: This was the overscaled z instead of the canonical z.
-        collisionBoxShader.u_scale = std::pow(2, state.getZoom() - tile.id.canonical.z);
+        collisionBoxShader.u_scale = std::pow(2.0f, state.getZoom() - tile.tile.id.overscaledZ);
         collisionBoxShader.u_zoom = state.getZoom() * 10;
         collisionBoxShader.u_maxzoom = (tile.id.canonical.z + 1) * 10;
         context.lineWidth = 1.0f;
