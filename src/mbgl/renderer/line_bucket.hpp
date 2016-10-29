@@ -53,7 +53,7 @@ private:
     std::vector<LineVertex> vertices;
     std::vector<gl::Triangle> triangles;
 
-    std::vector<ElementGroup<LineShader, LineSDFShader, LinePatternShader>> groups;
+    std::vector<ElementGroup<LineShader, LineSDFShader, LinePatternShader>> groups { 1 };
 
     optional<gl::VertexBuffer<LineVertex>> vertexBuffer;
     optional<gl::IndexBuffer<gl::Triangle>> indexBuffer;

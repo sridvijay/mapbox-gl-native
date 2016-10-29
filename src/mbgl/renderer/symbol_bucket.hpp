@@ -50,7 +50,7 @@ private:
     struct TextBuffer {
         std::vector<SymbolVertex> vertices;
         std::vector<gl::Triangle> triangles;
-        std::vector<ElementGroup<SymbolSDFShader>> groups;
+        std::vector<ElementGroup<SymbolSDFShader>> groups { 1 };
 
         optional<gl::VertexBuffer<SymbolVertex>> vertexBuffer;
         optional<gl::IndexBuffer<gl::Triangle>> indexBuffer;
@@ -59,7 +59,7 @@ private:
     struct IconBuffer {
         std::vector<SymbolVertex> vertices;
         std::vector<gl::Triangle> triangles;
-        std::vector<ElementGroup<SymbolSDFShader, SymbolIconShader>> groups;
+        std::vector<ElementGroup<SymbolSDFShader, SymbolIconShader>> groups { 1 };
 
         optional<gl::VertexBuffer<SymbolVertex>> vertexBuffer;
         optional<gl::IndexBuffer<gl::Triangle>> indexBuffer;
@@ -68,7 +68,7 @@ private:
     struct CollisionBoxBuffer {
         std::vector<CollisionBoxVertex> vertices;
         std::vector<gl::Line> lines;
-        std::vector<ElementGroup<CollisionBoxShader>> groups;
+        std::vector<ElementGroup<CollisionBoxShader>> groups { 1 };
 
         optional<gl::VertexBuffer<CollisionBoxVertex>> vertexBuffer;
         optional<gl::IndexBuffer<gl::Line>> indexBuffer;

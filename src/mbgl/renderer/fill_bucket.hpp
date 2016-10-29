@@ -39,8 +39,8 @@ private:
     std::vector<gl::Line> lines;
     std::vector<gl::Triangle> triangles;
 
-    std::vector<ElementGroup<FillOutlineShader, FillOutlinePatternShader>> lineGroups;
-    std::vector<ElementGroup<FillShader, FillPatternShader>> triangleGroups;
+    std::vector<ElementGroup<FillOutlineShader, FillOutlinePatternShader>> lineGroups { 1 };
+    std::vector<ElementGroup<FillShader, FillPatternShader>> triangleGroups { 1 };
 
     optional<gl::VertexBuffer<FillVertex>> vertexBuffer;
     optional<gl::IndexBuffer<gl::Line>> lineIndexBuffer;

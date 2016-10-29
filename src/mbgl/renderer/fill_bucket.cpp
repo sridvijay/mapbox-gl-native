@@ -44,7 +44,7 @@ void FillBucket::addGeometry(const GeometryCollection& geometry) {
 
         for (const auto& ring : polygon) {
             totalVertices += ring.size();
-            if (totalVertices > 65535)
+            if (totalVertices > std::numeric_limits<uint16_t>::max())
                 throw GeometryTooLongException();
         }
 
@@ -54,20 +54,19 @@ void FillBucket::addGeometry(const GeometryCollection& geometry) {
             if (nVertices == 0)
                 continue;
 
-            if (lineGroups.empty() || lineGroups.back().vertexLength + nVertices > 65535)
+            if (lineGroups.back().vertexLength + nVertices > std::numeric_limits<uint16_t>::max()) {
                 lineGroups.emplace_back();
+            }
 
             auto& lineGroup = lineGroups.back();
             uint16_t lineIndex = lineGroup.vertexLength;
 
             vertices.emplace_back(ring[0].x, ring[0].y);
-            lines.emplace_back(static_cast<uint16_t>(lineIndex + nVertices - 1),
-                               static_cast<uint16_t>(lineIndex));
+            lines.emplace_back(lineIndex + nVertices - 1, lineIndex);
 
             for (uint32_t i = 1; i < nVertices; i++) {
                 vertices.emplace_back(ring[i].x, ring[i].y);
-                lines.emplace_back(static_cast<uint16_t>(lineIndex + i - 1),
-                                   static_cast<uint16_t>(lineIndex + i));
+                lines.emplace_back(lineIndex + i - 1, lineIndex + i);
             }
 
             lineGroup.vertexLength += nVertices;
@@ -79,7 +78,7 @@ void FillBucket::addGeometry(const GeometryCollection& geometry) {
         std::size_t nIndicies = indices.size();
         assert(nIndicies % 3 == 0);
 
-        if (triangleGroups.empty() || triangleGroups.back().vertexLength + totalVertices > 65535) {
+        if (triangleGroups.back().vertexLength + totalVertices > std::numeric_limits<uint16_t>::max()) {
             triangleGroups.emplace_back();
         }
 
@@ -87,9 +86,9 @@ void FillBucket::addGeometry(const GeometryCollection& geometry) {
         uint16_t triangleIndex = triangleGroup.vertexLength;
 
         for (uint32_t i = 0; i < nIndicies; i += 3) {
-            triangles.emplace_back(static_cast<uint16_t>(triangleIndex + indices[i]),
-                                   static_cast<uint16_t>(triangleIndex + indices[i + 1]),
-                                   static_cast<uint16_t>(triangleIndex + indices[i + 2]));
+            triangles.emplace_back(triangleIndex + indices[i],
+                                   triangleIndex + indices[i + 1],
+                                   triangleIndex + indices[i + 2]);
         }
 
         triangleGroup.vertexLength += totalVertices;

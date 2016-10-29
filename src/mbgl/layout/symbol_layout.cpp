@@ -418,6 +418,7 @@ std::unique_ptr<SymbolBucket> SymbolLayout::place(CollisionTile& collisionTile) 
 
 template <typename Buffer>
 void SymbolLayout::addSymbols(Buffer &buffer, const SymbolQuads &symbols, float scale, const bool keepUpright, const style::SymbolPlacementType placement, const float placementAngle) {
+    static const uint16_t vertexLength = 4;
     const float placementZoom = util::max(std::log2(scale) + zoom, 0.0f);
 
     for (const auto& symbol : symbols) {
@@ -447,9 +448,7 @@ void SymbolLayout::addSymbols(Buffer &buffer, const SymbolQuads &symbols, float 
             minZoom = 0;
         }
 
-        const int glyph_vertex_length = 4;
-
-        if (buffer.groups.empty() || buffer.groups.back().vertexLength + glyph_vertex_length > 65535) {
+        if (buffer.groups.back().vertexLength + vertexLength > std::numeric_limits<uint16_t>::max()) {
             // Move to a new group because the old one can't hold the geometry.
             buffer.groups.emplace_back();
         }
@@ -457,7 +456,7 @@ void SymbolLayout::addSymbols(Buffer &buffer, const SymbolQuads &symbols, float 
         // We're generating triangle fans, so we always start with the first
         // coordinate in this polygon.
         auto& group = buffer.groups.back();
-        size_t index = group.vertexLength;
+        uint16_t index = uint16_t(group.vertexLength);
 
         // Encode angle of glyph
         uint8_t glyphAngle = std::round((symbol.glyphAngle / (M_PI * 2)) * 256);
@@ -473,14 +472,10 @@ void SymbolLayout::addSymbols(Buffer &buffer, const SymbolQuads &symbols, float 
                             minZoom, maxZoom, placementZoom, glyphAngle);
 
         // add the two triangles, referencing the four coordinates we just inserted.
-        buffer.triangles.emplace_back(static_cast<uint16_t>(index + 0),
-                                      static_cast<uint16_t>(index + 1),
-                                      static_cast<uint16_t>(index + 2));
-        buffer.triangles.emplace_back(static_cast<uint16_t>(index + 1),
-                                      static_cast<uint16_t>(index + 2),
-                                      static_cast<uint16_t>(index + 3));
+        buffer.triangles.emplace_back(index + 0, index + 1, index + 2);
+        buffer.triangles.emplace_back(index + 1, index + 2, index + 3);
 
-        group.vertexLength += glyph_vertex_length;
+        group.vertexLength += vertexLength;
         group.indexLength += 2;
     }
 }

@@ -39,6 +39,8 @@ bool CircleBucket::needsClipping() const {
 }
 
 void CircleBucket::addGeometry(const GeometryCollection& geometryCollection) {
+    static const uint16_t vertexLength = 4;
+
     for (auto& circle : geometryCollection) {
         for(auto & geometry : circle) {
             auto x = geometry.x;
@@ -64,7 +66,7 @@ void CircleBucket::addGeometry(const GeometryCollection& geometryCollection) {
             vertices.emplace_back(x, y, 1, 1); // 3
             vertices.emplace_back(x, y, -1, 1); // 4
 
-            if (!groups.size() || groups.back().vertexLength + 4 > 65535) {
+            if (groups.back().vertexLength + vertexLength > std::numeric_limits<uint16_t>::max()) {
                 // Move to a new group because the old one can't hold the geometry.
                 groups.emplace_back();
             }
@@ -74,14 +76,10 @@ void CircleBucket::addGeometry(const GeometryCollection& geometryCollection) {
 
             // 1, 2, 3
             // 1, 4, 3
-            triangles.emplace_back(index,
-                                   static_cast<uint16_t>(index + 1),
-                                   static_cast<uint16_t>(index + 2));
-            triangles.emplace_back(index,
-                                   static_cast<uint16_t>(index + 3),
-                                   static_cast<uint16_t>(index + 2));
+            triangles.emplace_back(index, index + 1, index + 2);
+            triangles.emplace_back(index, index + 3, index + 2);
 
-            group.vertexLength += 4;
+            group.vertexLength += vertexLength;
             group.indexLength += 2;
         }
     }

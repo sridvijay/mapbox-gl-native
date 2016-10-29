@@ -30,7 +30,7 @@ private:
     std::vector<CircleVertex> vertices;
     std::vector<gl::Triangle> triangles;
 
-    std::vector<ElementGroup<CircleShader>> groups;
+    std::vector<ElementGroup<CircleShader>> groups { 1 };
 
     optional<gl::VertexBuffer<CircleVertex>> vertexBuffer;
     optional<gl::IndexBuffer<gl::Triangle>> indexBuffer;
